@@ -73,6 +73,8 @@ namespace HashTableProj
             }
             Count++;
             TableState=state.USED;
+            if(Count==5)
+                TableState=state.FULL;
         }
         public string SearchList(string searchName)//찾을 데이터를 앞에서부터 탐색(삭제에서 사용하기위해 만듬)
         {
@@ -132,9 +134,10 @@ namespace HashTableProj
             }
             else
             {
-                Console.WriteLine("탐색실패:삭제불가");
+                Console.WriteLine("[탐색실패:삭제불가]");
             }
         }
+        
         public void SearchListAll()
         {
             Node sCur=new Node();
@@ -195,7 +198,7 @@ namespace HashTableProj
                     else if(hashCount==2)
                         doubleHashCode=doubleHashCode.Hashing();
                         
-                    if(doubleHashCode!=hashcode&&buket[doubleHashCode].Count<5)
+                    if(doubleHashCode!=hashcode&&buket[doubleHashCode].TableState!=state.FULL)
                     {
                         hashCount=0;
                         buket[doubleHashCode].Key=doubleHashCode;
@@ -216,11 +219,12 @@ namespace HashTableProj
         {
             if(buket[key].TableState==state.EMPTY)
             {   
-                Console.Write("탐색할 데이터가 없습니다");
+                Console.WriteLine("탐색실패:탐색할 데이터가 없습니다");
                 return null;
             }
             else
             {
+                Console.Write("탐색성공:");
                 return buket[key].head.Name;
             }
         }
@@ -231,75 +235,151 @@ namespace HashTableProj
                 buket[i].SearchListAll();
             }
         }
-        public string SearchToName(int key,string value)
+        public string SearchToValue(int key,string value)//변경 키에값은있으나 입력하는값이 틀리는 경우 나눠야함
         {
             if(buket[key].TableState!=state.EMPTY)//키에 값있을때
-                return buket[key].SearchList(value);
+            {
+                if(buket[key].SearchList(value)!=null)
+                {
+                    //Console.WriteLine("탐색성공:");
+                    return buket[key].SearchList(value);
+                }
+                else
+                {
+                    Console.WriteLine("탐색실패:키에 입력된 값을 찾지 못했습니다");
+                    return null;
+                }
+            }
             else//키에 값 없을때
             {
-                Console.Write("해당 키에 값이 없습니다=>");
+                Console.WriteLine("탐색실패:해당 키에 값이 없습니다");
                 return null;
             }
         }
-        public string Delete(int index,string value)
+        public string Delete(int key,string value)//변경 
         {
             Node rpos=new Node();
             rpos.Name=value;
-            if(buket[index].TableState!=state.EMPTY)
+            if(buket[key].TableState!=state.EMPTY)
             {
-                buket[index].DeleteList(SearchToName(index,value));
-                if(buket[index].TableState==state.EMPTY)
+                buket[key].DeleteList(SearchToValue(key,value));
+                if(buket[key].TableState==state.EMPTY)
                     NumOfBuket--;
                 return rpos.Name;
             }
             else
             {
-                buket[index].DeleteList(SearchToName(index,value));
+                buket[key].DeleteList(SearchToValue(key,value));
                 return null;
+            }
+        }
+        public void DeleteAll(int key)
+        {
+            if(buket[key].TableState!=state.EMPTY)
+            {
+                buket[key].ClearList();
+                NumOfBuket--;
+                Console.WriteLine($"****{key}번째 테이블 삭제****");
+            }
+            else
+            {
+                Console.WriteLine("삭제하려는 테이블에 데이터가 없습니다");
             }
         }
         public void Clear()
         {
-            for(int i=0; i<10; i++)
+            for(int i=0; i<100; i++)
             {
                 buket[i].ClearList();
             }
             NumOfBuket=0;
             Console.WriteLine("테이블 초기화");
         }
+        public HashtableH Clone()
+        {
+            return this;
+        }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            int selNum=0;
-            HashtableH hs =new HashtableH();
-            hs.Add("hdy","황도영1");
-            hs.Add("hdy","황도영2");
-            hs.Add("hdy","황도영3");
-            hs.Add("hdy","황도영4");
-            hs.Add("hdy","황도영5");
-            hs.Add("hdy","황도영6");
-            hs.Add("hdy","황도영7");
-            hs.Add("hdy","황도영8");
-            hs.Add("hdy","황도영9");
-            hs.Add("hdy","황도영10");
-            hs.Add("hdy","황도영11");
-            hs.Add("hdy","황도영12");
-            hs.Add("hdy","황도영13");
-            hs.Add("hdy","황도영14");
-            hs.Add("hdy","황도영15");
-            hs.Add("hdy","황도영16");
-            hs.Add("hdy","황도영17");
-            hs.Add("hdy","황도영18");
+            HashtableH hashtable=new HashtableH();
 
-            hs.SearchAll();
-            Console.WriteLine($"현재 테이블 갯수{hs.NumOfBuket}");
-            Console.Write("탐색할 키를 입력하시오:");
-            selNum=int.Parse(Console.ReadLine());
-            Console.WriteLine($"{selNum}번째 테이블값:[{hs.Search(selNum)}]");
-
+            //1.데이터 삽입:Add(string key,string value)=>데이터 30개 삽입(이중해싱은 2번까지밖에 허용하지 않아 황도영16은 저장할수없다)
+            hashtable.Add("hello","황도영1");hashtable.Add("hello","황도영2");
+            hashtable.Add("hello","황도영3");hashtable.Add("hello","황도영4");
+            hashtable.Add("hello","황도영5");hashtable.Add("hello","황도영6");
+            hashtable.Add("hello","황도영7");hashtable.Add("hello","황도영8");
+            hashtable.Add("hello","황도영9");hashtable.Add("hello","황도영10");
+            hashtable.Add("hello","황도영11");hashtable.Add("hello","황도영12");
+            hashtable.Add("hello","황도영13");hashtable.Add("hello","황도영14");
+            hashtable.Add("hello","황도영15");hashtable.Add("hello","황도영16");
+            hashtable.Add("world","황도영17");hashtable.Add("world","황도영18");
+            hashtable.Add("world","황도영19");hashtable.Add("world","황도영20");
+            hashtable.Add("world","황도영21");hashtable.Add("world","황도영22");
+            hashtable.Add("world","황도영23");hashtable.Add("world","황도영24");
+            hashtable.Add("animal","황도영25");hashtable.Add("animal","황도영26");
+            hashtable.Add("animal","황도영27");hashtable.Add("animal","황도영28");
+            hashtable.Add("animal","황도영29");hashtable.Add("animal","황도영30");
             
+            //2.데이터 출력:SearchAll()=>전체출력
+            hashtable.SearchAll();
+
+            //3.현재 테이블의 수 출력:Count
+            Console.WriteLine($"현재 테이블의 수:{hashtable.NumOfBuket}");
+            Console.WriteLine("\r\n");
+
+            //4.데이터 삭제:Delete(int key,string value)=>키에 해당하는 벨류값을 찾아서 삭제
+            int inputNum;
+            string inputValue;
+            Console.Write("삭제할 데이터의 키값 입력:");
+            inputNum=int.Parse(Console.ReadLine());
+            Console.Write("삭제할 데이터의 벨류값 입력:");
+            inputValue=Console.ReadLine();
+            hashtable.Delete(inputNum,inputValue);
+            hashtable.SearchAll();
+            Console.WriteLine($"현재 테이블의 수:{hashtable.NumOfBuket}");
+            Console.WriteLine("\r\n");
+
+            //5.데이터 삭제:DeleteAll(int key)=>입력한 키값에 해당하는 테이블 삭제
+            Console.Write("삭제할 테이블의 키값 입력:");
+            inputNum=int.Parse(Console.ReadLine());
+            hashtable.DeleteAll(inputNum);
+            hashtable.SearchAll();
+            Console.WriteLine($"현재 테이블의 수:{hashtable.NumOfBuket}");
+            Console.WriteLine("\r\n");
+            
+            //6.데이터 탐색:Search(int key)=>키에 해당하는 헤드 정보를 나타냄
+            Console.Write("탐색할 데이터의 키값 입력(헤드값출력):");
+            inputNum=int.Parse(Console.ReadLine());
+            Console.WriteLine($"[{hashtable.Search(inputNum)}]");
+            Console.WriteLine("\r\n");
+
+            //7.데이터 탐색:SearchToValue(int key,string value)=>키에 해당하는 벨류값을 탐색
+            Console.Write("탐색할 데이터의 키값 입력:");
+            inputNum=int.Parse(Console.ReadLine());
+            Console.Write("탐색할 데이터의 벨류값 입력:");
+            inputValue=Console.ReadLine();
+            Console.WriteLine($"[{hashtable.SearchToValue(inputNum,inputValue)}]");
+            Console.WriteLine("\r\n");
+
+            //8.테이블 복사:Clone()
+            Console.WriteLine("테이블 복사를 하려면 아무키나 누르시오");
+            Console.ReadLine();
+            HashtableH hashtable2=new HashtableH();
+            hashtable2=hashtable.Clone();
+            Console.WriteLine("****복사된 테이블의 데이터 출력****");
+            hashtable2.SearchAll();
+            Console.WriteLine($"현재 테이블의 수:{hashtable2.NumOfBuket}");
+            Console.WriteLine("\r\n");
+
+            //9.테이블 초기화:Clear()=>모든테이블을 초기화한다
+            Console.WriteLine("테이블 초기화를 하려면 아무키나 누르시오");
+            Console.ReadLine();
+            hashtable.Clear();
+            hashtable.SearchAll();
+            Console.WriteLine($"현재 테이블의 수:{hashtable.NumOfBuket}");
                
         }
     }
