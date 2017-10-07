@@ -10,15 +10,15 @@ namespace HashTableProj
             int hashcode=0;
             for(int i=0; i<st.Length; i++)
             {
-                hashcode+=Convert.ToInt32(st[i]);
+                hashcode+=Convert.ToInt16(st[i]);
             }
-            hashcode=hashcode%10;
+            hashcode=hashcode%100;
             return hashcode;
         }
 
         public static int Hashing(this int hCode)
         {
-            hCode=(hCode%7)+1;
+            hCode=(hCode%47)+1;
             return hCode;
         }
     }
@@ -28,9 +28,9 @@ namespace HashTableProj
         
     }
     class LinkedListH{
-        private Node head;
+        public Node head;
         private Node tail;
-        public Node cur;
+        private Node cur;
         private Node before;
         public state  TableState;
         public int Key{get;set;}
@@ -74,7 +74,7 @@ namespace HashTableProj
             Count++;
             TableState=state.USED;
         }
-        public string SearchList(string searchName)//찾을 데이터를 앞에서부터 탐색
+        public string SearchList(string searchName)//찾을 데이터를 앞에서부터 탐색(삭제에서 사용하기위해 만듬)
         {
             cur=head;
             before=null;
@@ -143,18 +143,23 @@ namespace HashTableProj
             {
                 for(int i=0; i<Count; i++)
                 {
-                    Console.Write($"{sCur.Name}  ");
+                    if(i==0)
+                        Console.Write($"({sCur.Name})---->");
+                    else if(i==4)
+                        Console.Write($"{sCur.Name}  ");
+                    else
+                        Console.Write($"{sCur.Name}---->");
                     sCur=sCur.next;
                 }
                 Console.WriteLine("[Key번호:{0}]",Key);
             }
-          
         }
     }
 
     enum state{
         EMPTY=0,//비어있음
-        USED//데이터있음
+        USED,//데이터있음
+        FULL
     }
     class HashtableH{
         private LinkedListH[] buket;
@@ -162,8 +167,8 @@ namespace HashTableProj
         public int NumOfBuket{get;set;}//구현하기
         public HashtableH()
         {
-            buket=new LinkedListH[10];
-            for(int i=0; i<10; i++)
+            buket=new LinkedListH[100];
+            for(int i=0; i<100; i++)
             {
                 buket[i]=new LinkedListH();
             }
@@ -203,21 +208,36 @@ namespace HashTableProj
                 if(hashCount==2)
                 {
                     hashCount=0;
-                    Console.WriteLine("삽입불가");
+                    Console.WriteLine($"***{value} 삽입불가***");
                 }
             }
         }
-        public void SearchAll(int index)
-        {   
-            buket[index].SearchListAll();
-        }
-        public string Search(int index,string value)
+        public string Search(int key)
         {
-            if(buket[index].TableState!=state.EMPTY)//인덱스에 값있을때
-                return buket[index].SearchList(value);
-            else//인덱스에 값 없을때
+            if(buket[key].TableState==state.EMPTY)
+            {   
+                Console.Write("탐색할 데이터가 없습니다");
+                return null;
+            }
+            else
             {
-                Console.Write("해당 인덱스에 값이 없습니다=>");
+                return buket[key].head.Name;
+            }
+        }
+        public void SearchAll()
+        {   
+            for(int i=0; i<100; i++)
+            {        
+                buket[i].SearchListAll();
+            }
+        }
+        public string SearchToName(int key,string value)
+        {
+            if(buket[key].TableState!=state.EMPTY)//키에 값있을때
+                return buket[key].SearchList(value);
+            else//키에 값 없을때
+            {
+                Console.Write("해당 키에 값이 없습니다=>");
                 return null;
             }
         }
@@ -227,14 +247,14 @@ namespace HashTableProj
             rpos.Name=value;
             if(buket[index].TableState!=state.EMPTY)
             {
-                buket[index].DeleteList(Search(index,value));
+                buket[index].DeleteList(SearchToName(index,value));
                 if(buket[index].TableState==state.EMPTY)
                     NumOfBuket--;
                 return rpos.Name;
             }
             else
             {
-                buket[index].DeleteList(Search(index,value));
+                buket[index].DeleteList(SearchToName(index,value));
                 return null;
             }
         }
@@ -252,34 +272,34 @@ namespace HashTableProj
     {
         static void Main(string[] args)
         {
-            Hashtable h =new Hashtable();
+            int selNum=0;
             HashtableH hs =new HashtableH();
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
-            hs.Add("hdy","황도영");
+            hs.Add("hdy","황도영1");
+            hs.Add("hdy","황도영2");
+            hs.Add("hdy","황도영3");
+            hs.Add("hdy","황도영4");
+            hs.Add("hdy","황도영5");
+            hs.Add("hdy","황도영6");
+            hs.Add("hdy","황도영7");
+            hs.Add("hdy","황도영8");
+            hs.Add("hdy","황도영9");
+            hs.Add("hdy","황도영10");
+            hs.Add("hdy","황도영11");
+            hs.Add("hdy","황도영12");
+            hs.Add("hdy","황도영13");
+            hs.Add("hdy","황도영14");
+            hs.Add("hdy","황도영15");
+            hs.Add("hdy","황도영16");
+            hs.Add("hdy","황도영17");
+            hs.Add("hdy","황도영18");
 
-            for(int i=0; i<10; i++)
-                hs.SearchAll(i);
-            Console.WriteLine(hs.NumOfBuket);
-
-            hs.Delete(7,"황도영");
-            hs.Delete(7,"황도영");
+            hs.SearchAll();
+            Console.WriteLine($"현재 테이블 갯수{hs.NumOfBuket}");
+            Console.Write("탐색할 키를 입력하시오:");
+            selNum=int.Parse(Console.ReadLine());
+            Console.WriteLine($"{selNum}번째 테이블값:[{hs.Search(selNum)}]");
 
             
-            for(int i=0; i<10; i++)
-                hs.SearchAll(i);
-            Console.WriteLine(hs.NumOfBuket);
-
-                 
                
         }
     }
