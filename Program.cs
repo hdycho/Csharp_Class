@@ -167,7 +167,7 @@ namespace HashTableProj
     class HashtableH{
         private LinkedListH[] buket;
         private int hashCount;
-        public int NumOfBuket{get;set;}//구현하기
+        public int NumOfBuket{get;set;}
         public HashtableH()
         {
             buket=new LinkedListH[100];
@@ -239,7 +239,7 @@ namespace HashTableProj
         {
             if(buket[key].TableState!=state.EMPTY)//키에 값있을때
             {
-                if(buket[key].SearchList(value)!=null)
+                if(buket[key].SearchList(value)!=null)//값을 탐색 성공했을때
                 {
                     //Console.WriteLine("탐색성공:");
                     return buket[key].SearchList(value);
