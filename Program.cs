@@ -22,6 +22,12 @@ namespace HashTableProj
             return hCode;
         }
     }
+    //리스트의 상태
+    enum state{
+        EMPTY=0,//비어있음
+        USED,//데이터있음
+        FULL//꽉참
+    }
     public class Node{
         public string Name{get;set;}
         public Node next;
@@ -158,15 +164,9 @@ namespace HashTableProj
             }
         }
     }
-
-    enum state{
-        EMPTY=0,//비어있음
-        USED,//데이터있음
-        FULL
-    }
     class HashtableH{
         private LinkedListH[] buket;
-        private int hashCount;
+        private int hashCount;//해싱 2번의 제한을 주기위해
         public int NumOfBuket{get;set;}
         public HashtableH()
         {
