@@ -34,7 +34,7 @@ namespace HashTableProj
         
     }
     class LinkedListH{
-        public Node head;
+        public Node head{get;set;}
         private Node tail;
         private Node cur;
         private Node before;
@@ -297,6 +297,7 @@ namespace HashTableProj
         }
         public HashtableH Clone()
         {
+
             return this;
         }
     }
